@@ -1,4 +1,5 @@
 import 'package:currency_app_st_getx/app/modules/main/controllers/main_controller.dart';
+import 'package:currency_app_st_getx/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,7 +20,12 @@ class MainView extends GetView<MainController> {
                 ? IconButton(
                     icon: const Icon(Icons.settings),
                     iconSize: 30.0,
-                    onPressed: () {},
+                    onPressed: () {
+                      controller.makeListWithChanges();
+                      Get.toNamed(
+                        Routes.settings,
+                      );
+                    },
                     splashRadius: 20.0,
                   )
                 : const SizedBox.shrink(),
@@ -83,72 +89,102 @@ class MainView extends GetView<MainController> {
                             ),
                           ),
                           Expanded(
-                            child: ListView.builder(
-                              itemBuilder: (ctx, index) => Row(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(
-                                        constraints.maxHeight * 0.01,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            controller
-                                                .currency[index].abbreviation,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          Text(
-                                            '${controller.currency[index].scale} ${controller.currency[index].name.toLowerCase()}',
-                                            overflow: TextOverflow.clip,
-                                          ),
-                                        ],
-                                      ),
+                            child: Obx(
+                              () => !controller.settingsChanged.value
+                                  ? ListView.builder(
+                                      itemBuilder: (ctx, index) => controller
+                                              .currency[index].show.value
+                                          ? Row(
+                                              key: controller
+                                                  .currency[index].key,
+                                              children: [
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(
+                                                      constraints.maxHeight *
+                                                          0.01,
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          controller
+                                                              .currency[index]
+                                                              .abbreviation,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          '${controller.currency[index].scale} ${controller.currency[index].name.toLowerCase()}',
+                                                          overflow:
+                                                              TextOverflow.clip,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                controller.yesterdayCurrency
+                                                        .isNotEmpty
+                                                    ? Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                          right: constraints
+                                                                  .maxHeight *
+                                                              0.01,
+                                                        ),
+                                                        child: Text(
+                                                          controller
+                                                              .currency[index]
+                                                              .yesterdayRate
+                                                              .toString(),
+                                                        ),
+                                                      )
+                                                    : const SizedBox.shrink(),
+                                                Padding(
+                                                  padding: EdgeInsets.only(
+                                                    right:
+                                                        constraints.maxHeight *
+                                                            0.02,
+                                                  ),
+                                                  child: Text(
+                                                    controller
+                                                        .currency[index].rate
+                                                        .toString(),
+                                                  ),
+                                                ),
+                                                controller.tomorrowCurrency
+                                                        .isNotEmpty
+                                                    ? Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                          right: constraints
+                                                                  .maxHeight *
+                                                              0.01,
+                                                        ),
+                                                        child: SizedBox(
+                                                          width: 55.0,
+                                                          child: Text(
+                                                            controller
+                                                                .currency[index]
+                                                                .tomorrowRate
+                                                                .toString(),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : const SizedBox.shrink(),
+                                              ],
+                                            )
+                                          : const SizedBox.shrink(),
+                                      itemCount: controller.currency.length,
+                                    )
+                                  : const Center(
+                                      child: CircularProgressIndicator(),
                                     ),
-                                  ),
-                                  controller.yesterdayCurrency.isNotEmpty
-                                      ? Padding(
-                                          padding: EdgeInsets.only(
-                                            right: constraints.maxHeight * 0.01,
-                                          ),
-                                          child: Text(
-                                            controller
-                                                .currency[index].yesterdayRate
-                                                .toString(),
-                                          ),
-                                        )
-                                      : const SizedBox.shrink(),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      right: constraints.maxHeight * 0.02,
-                                    ),
-                                    child: Text(
-                                      controller.currency[index].rate
-                                          .toString(),
-                                    ),
-                                  ),
-                                  controller.tomorrowCurrency.isNotEmpty
-                                      ? Padding(
-                                          padding: EdgeInsets.only(
-                                            right: constraints.maxHeight * 0.01,
-                                          ),
-                                          child: SizedBox(
-                                            width: 55.0,
-                                            child: Text(
-                                              controller
-                                                  .currency[index].tomorrowRate
-                                                  .toString(),
-                                            ),
-                                          ),
-                                        )
-                                      : const SizedBox.shrink(),
-                                ],
-                              ),
-                              itemCount: controller.currency.length,
                             ),
                           ),
                         ],

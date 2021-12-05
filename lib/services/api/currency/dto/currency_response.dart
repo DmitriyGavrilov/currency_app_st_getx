@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class CurrencyResponse {
   List<CurrencyResponseItem> currency = [];
 
@@ -11,6 +13,7 @@ class CurrencyResponse {
 }
 
 class CurrencyResponseItem {
+  late Key key;
   late int id;
   late String name;
   late String abbreviation;
@@ -19,6 +22,7 @@ class CurrencyResponseItem {
   late String date;
 
   CurrencyResponseItem({
+    required this.key,
     required this.id,
     required this.name,
     required this.abbreviation,
@@ -28,6 +32,7 @@ class CurrencyResponseItem {
   });
 
   CurrencyResponseItem.fromJson(Map<String, dynamic> json) {
+    key = Key(json['Cur_ID'].toString());
     id = json['Cur_ID'];
     name = json['Cur_Name'];
     abbreviation = json['Cur_Abbreviation'];

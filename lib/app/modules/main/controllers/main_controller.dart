@@ -13,13 +13,81 @@ class MainController extends GetxController {
   List<Currency> _yesterdayCurrency = [];
   List<Currency> get yesterdayCurrency => [..._yesterdayCurrency];
   List<Currency> _currency = [];
-  List<Currency> get currency => [..._currency];
+  final List<Currency> _newSettingsCurrency = [];
+  RxList<Currency> get currency => [..._currency].obs;
+  RxList<Currency> get newSettingsCurrency => [..._newSettingsCurrency].obs;
   List<Currency> _tomorrowCurrency = [];
   List<Currency> get tomorrowCurrency => [..._tomorrowCurrency];
 
   // Controller wide observables
   RxBool isLoading = true.obs;
   RxBool isError = false.obs;
+  RxBool settingsChanged = false.obs;
+
+  /// Make currency list with changes
+  void makeListWithChanges() {
+    _newSettingsCurrency.addAll(_currency);
+    for (var element in _currency) {
+      for (var elementSettings in _newSettingsCurrency) {
+        if (elementSettings.id == element.id) {
+          elementSettings.active.value = element.show.value;
+        }
+      }
+    }
+  }
+
+  /// Change settings
+  void changeSettings() {
+    settingsChanged.value = true;
+  }
+
+  /// Back to main view
+  void backToMain() {
+    Get.back();
+    settingsChanged.value = false;
+    _newSettingsCurrency.clear();
+  }
+
+  /// Save settings
+  void saveSettings() {
+    _currency.clear();
+    _currency.addAll(_newSettingsCurrency);
+    for (var elementSettings in _newSettingsCurrency) {
+      for (var element in _currency) {
+        if (element.id == elementSettings.id) {
+          element.show.value = elementSettings.active.value;
+        }
+      }
+    }
+    settingsChanged.value = false;
+  }
+
+  /// Update position in currency list
+  void updatePosition(
+    int oldPosition,
+    int newPosition,
+  ) {
+    changeSettings();
+    if (newPosition > oldPosition) {
+      --newPosition;
+    }
+
+    final Currency currencyItem = newSettingsCurrency[oldPosition];
+    _newSettingsCurrency.removeAt(oldPosition);
+    _newSettingsCurrency.insert(newPosition, currencyItem);
+  }
+
+  /// Update active status
+  void updateStatus(int index, bool newValue) {
+    changeSettings();
+    print('_newOld' + '${_newSettingsCurrency[index].active.value}');
+    print('old' + '${_currency[index].active.value}');
+    _newSettingsCurrency[index].active.value = newValue;
+    // _currency[index].active.value = newValue;
+    // _currency[index].active.value = !_newSettingsCurrency[index].active.value;
+    print('_newNew' + '${_newSettingsCurrency[index].active.value}');
+    print('_newOld' + '${_currency[index].active.value}');
+  }
 
   /// Get yesterday date
   String getYesterdayDate() {

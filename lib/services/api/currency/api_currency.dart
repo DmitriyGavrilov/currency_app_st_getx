@@ -19,6 +19,7 @@ class ApiCurrency {
     final responseDto = CurrencyResponse.fromJson(response.data);
     List<Currency> currency = responseDto.currency.map((currencyItem) {
       return Currency(
+        key: currencyItem.key,
         id: currencyItem.id,
         name: currencyItem.name,
         abbreviation: currencyItem.abbreviation,
