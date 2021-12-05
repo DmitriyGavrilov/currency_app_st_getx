@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:currency_app_st_getx/models/main/currency_model.dart';
 import 'package:currency_app_st_getx/services/api/api_service.dart';
 import 'package:currency_app_st_getx/services/api/currency/api_currency.dart';
+import 'package:currency_app_st_getx/services/common/storage/storage_service.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class MainController extends GetxController {
+  final StorageService _storageService = Get.find();
   late ApiCurrency _apiCurrency;
 
   // Controller data
@@ -59,6 +61,18 @@ class MainController extends GetxController {
         }
       }
     }
+    List<String> _listOfActiveCurrency = [];
+    for (var element in _newSettingsCurrency) {
+      if (element.active.value) {
+        _listOfActiveCurrency.add(element.id.toString());
+      }
+    }
+    final List<String> _listOfPositions =
+        _newSettingsCurrency.map((e) => e.id.toString()).toList();
+    _storageService.setListString(
+        StorageKeys.listOfActiveCurrency, _listOfActiveCurrency);
+    _storageService.setListString(
+        StorageKeys.listOfPositions, _listOfPositions);
     settingsChanged.value = false;
   }
 
@@ -80,13 +94,7 @@ class MainController extends GetxController {
   /// Update active status
   void updateStatus(int index, bool newValue) {
     changeSettings();
-    print('_newOld' + '${_newSettingsCurrency[index].active.value}');
-    print('old' + '${_currency[index].active.value}');
     _newSettingsCurrency[index].active.value = newValue;
-    // _currency[index].active.value = newValue;
-    // _currency[index].active.value = !_newSettingsCurrency[index].active.value;
-    print('_newNew' + '${_newSettingsCurrency[index].active.value}');
-    print('_newOld' + '${_currency[index].active.value}');
   }
 
   /// Get yesterday date
@@ -169,6 +177,42 @@ class MainController extends GetxController {
             }
           }
         }
+      }
+
+      final List<String>? _listOfActiveCurrency =
+          _storageService.getListString(StorageKeys.listOfActiveCurrency);
+      if (_listOfActiveCurrency != null) {
+        for (var activeElementId in _listOfActiveCurrency) {
+          for (var currencyElement in _currency) {
+            if (int.parse(activeElementId) == currencyElement.id) {
+              currencyElement.show.value = true;
+            }
+          }
+        }
+      } else {
+        for (var element in _currency) {
+          if (element.abbreviation == 'USD' ||
+              element.abbreviation == 'EUR' ||
+              element.abbreviation == 'RUB') {
+            element.show.value = true;
+          } else {
+            element.show.value = false;
+          }
+        }
+      }
+      final List<String>? _listOfPositions =
+          _storageService.getListString(StorageKeys.listOfPositions);
+      if (_listOfPositions != null) {
+        final List<Currency> _sortedCurrency = [];
+        for (var elementPositionId in _listOfPositions) {
+          for (var currencyElement in _currency) {
+            if (int.parse(elementPositionId) == currencyElement.id) {
+              _sortedCurrency.add(currencyElement);
+            }
+          }
+        }
+        _currency.clear();
+        _currency.addAll(_sortedCurrency);
       }
 
       isLoading.value = false;

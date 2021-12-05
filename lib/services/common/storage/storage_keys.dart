@@ -1,6 +1,9 @@
 part of 'storage_service.dart';
 
 class StorageKeys {
-  /// Is the first start of the app?
-  static const String isFirstLaunch = 'isFirstLaunch';
+  /// List of active currency
+  static const String listOfActiveCurrency = 'listOfActiveCurrency';
+
+  /// List of active currency
+  static const String listOfPositions = 'listOfPositions';
 }

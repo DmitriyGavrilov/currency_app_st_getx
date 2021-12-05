@@ -11,8 +11,8 @@ class Currency {
   late final String date;
   double? tomorrowRate;
   double? yesterdayRate;
-  RxBool active = true.obs;
-  RxBool show = true.obs;
+  RxBool active = false.obs;
+  RxBool show = false.obs;
 
   Currency({
     required this.key,

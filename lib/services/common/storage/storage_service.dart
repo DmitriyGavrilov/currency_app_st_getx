@@ -10,6 +10,15 @@ class StorageService extends GetxService {
     _prefs ??= await SharedPreferences.getInstance();
   }
 
+  void setListString(String key, List<String> value) {
+    _prefs?.setStringList(key, value);
+  }
+
+  List<String>? getListString(String key) {
+    List<String>? result = _prefs?.getStringList(key);
+    return result;
+  }
+
   void setBool(String key, bool value) {
     _prefs?.setBool(key, value);
   }
